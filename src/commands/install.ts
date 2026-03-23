@@ -10,6 +10,11 @@ import {
   SKILL_LABEL as ISSUE_LABEL,
   getInstallPath as getIssuePath,
 } from '../skills/issue-analyzer/index.js';
+import {
+  install as installDeploy,
+  SKILL_LABEL as DEPLOY_LABEL,
+  getInstallPath as getDeployPath,
+} from '../skills/server-deploy/index.js';
 import { registerIssueAnalyzerPermissions, registerAtlassianMcp } from '../utils/settings.js';
 
 interface InstallResult {
@@ -36,6 +41,11 @@ export async function installCommand(): Promise<void> {
         value: 'issue-analyzer',
         label: 'Jira 이슈 분석',
         hint: 'Jira 티켓 + 코드베이스 연결 분석',
+      },
+      {
+        value: 'server-deploy',
+        label: '서버 배포 (QA/CI)',
+        hint: 'SSH로 QA/CI 서버에 자동 배포',
       },
     ],
     required: false,
@@ -121,6 +131,57 @@ export async function installCommand(): Promise<void> {
         installed: true,
         path: getIssuePath(),
       });
+    }
+  }
+
+  // 서버 배포 — QA/CI SSH 설정
+  if (selected.includes('server-deploy')) {
+    log.step('서버 배포 설정');
+    log.info('배포할 서버 정보를 입력하세요.');
+    log.info('건너뛰려면 아무것도 입력하지 않고 엔터를 누르세요.');
+
+    const servers: Record<string, object> = {};
+
+    for (const serverType of ['qa', 'ci']) {
+      log.step(`${serverType.toUpperCase()} 서버`);
+
+      const host = await text({ message: `호스트 (IP 또는 도메인)`, placeholder: '192.168.1.100' });
+      handleCancel(host);
+      if (isSkipped(host)) { log.warn(`${serverType.toUpperCase()} 서버 건너뜀`); continue; }
+
+      const user = await text({ message: 'SSH 사용자명', placeholder: 'ubuntu', defaultValue: 'ubuntu' });
+      handleCancel(user);
+
+      const pwd = serverType === 'qa'
+        ? await password({ message: '비밀번호 (SSH 키 인증이면 엔터)', mask: '*' })
+        : { value: '' };
+      handleCancel(pwd);
+
+      const projectPath = await text({ message: '서버의 프로젝트 경로', placeholder: '/var/www/my-app' });
+      handleCancel(projectPath);
+      if (isSkipped(projectPath)) { log.warn(`${serverType.toUpperCase()} 서버 건너뜀`); continue; }
+
+      const branch = await text({ message: '배포 브랜치', placeholder: serverType === 'qa' ? 'develop' : 'main', defaultValue: serverType === 'qa' ? 'develop' : 'main' });
+      handleCancel(branch);
+
+      const serverEntry: Record<string, string> = {
+        host: (host as string).trim(),
+        user: (user as string).trim(),
+        projectPath: (projectPath as string).trim(),
+        branch: (branch as string).trim(),
+      };
+      const pwdStr = typeof pwd === 'string' ? pwd : (pwd as { value?: string }).value ?? '';
+      if (pwdStr.trim()) serverEntry.password = pwdStr.trim();
+
+      servers[serverType] = serverEntry;
+    }
+
+    if (Object.keys(servers).length > 0) {
+      installDeploy({ servers });
+      registerIssueAnalyzerPermissions();
+      results.push({ label: DEPLOY_LABEL, installed: true, path: getDeployPath() });
+    } else {
+      results.push({ label: DEPLOY_LABEL, installed: false, reason: 'chrys-tools add deploy로 추가 가능' });
     }
   }
 

@@ -41,6 +41,10 @@ const ISSUE_ANALYZER_PERMISSIONS = [
   'mcp__claude_ai_Atlassian__transitionJiraIssue',
   // mcp-atlassian-jira (install 시 자동 설정되는 MCP)
   'mcp__mcp-atlassian-jira__*',
+  // SSH 배포 권한
+  'Bash(ssh*)',
+  'Bash(plink*)',
+  'Bash(sshpass*)',
 ];
 
 function readSettings(): Settings {
