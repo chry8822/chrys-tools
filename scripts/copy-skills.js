@@ -2,7 +2,7 @@
 const { cpSync, mkdirSync } = require('fs');
 const { join } = require('path');
 
-const skills = ['readme-generator', 'issue-analyzer', 'server-deploy'];
+const skills = ['readme-generator', 'issue-analyzer', 'server-deploy', 'present-generator'];
 
 for (const skill of skills) {
   const dest = join(__dirname, '..', 'dist', 'skills', skill);

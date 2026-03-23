@@ -15,6 +15,11 @@ import {
   SKILL_LABEL as DEPLOY_LABEL,
   getInstallPath as getDeployPath,
 } from '../skills/server-deploy/index.js';
+import {
+  install as installPresent,
+  SKILL_LABEL as PRESENT_LABEL,
+  getInstallPath as getPresentPath,
+} from '../skills/present-generator/index.js';
 import { registerIssueAnalyzerPermissions, registerAtlassianMcp } from '../utils/settings.js';
 
 interface InstallResult {
@@ -46,6 +51,11 @@ export async function installCommand(): Promise<void> {
         value: 'server-deploy',
         label: '서버 배포 (QA/CI)',
         hint: 'SSH로 QA/CI 서버에 자동 배포',
+      },
+      {
+        value: 'present-generator',
+        label: '발표용 HTML 생성',
+        hint: '프로젝트 소개/발표용 HTML 페이지 자동 생성',
       },
     ],
     required: false,
@@ -134,6 +144,16 @@ export async function installCommand(): Promise<void> {
     }
   }
 
+  // 발표용 HTML 생성 — 별도 설정 없이 설치
+  if (selected.includes('present-generator')) {
+    installPresent();
+    results.push({
+      label: PRESENT_LABEL,
+      installed: true,
+      path: getPresentPath(),
+    });
+  }
+
   // 서버 배포 — QA/CI SSH 설정
   if (selected.includes('server-deploy')) {
     log.step('서버 배포 설정');
@@ -203,6 +223,10 @@ export async function installCommand(): Promise<void> {
   if (results.some((r) => r.label === ISSUE_LABEL && r.installed)) {
     usageLines.push('"PROJ-1234 분석해줘"');
     usageLines.push('"이 이슈 어디서 난 거야"');
+  }
+  if (results.some((r) => r.label === PRESENT_LABEL && r.installed)) {
+    usageLines.push('"발표 자료 만들어줘"');
+    usageLines.push('"프로젝트 소개 HTML 만들어줘"');
   }
 
   if (usageLines.length > 0) {

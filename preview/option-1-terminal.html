@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chrys-tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --green: #00ff88;
+      --green-dim: #00cc6a;
+      --blue: #58a6ff;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --red: #ff6e6e;
+      --yellow: #ffa657;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      overflow-x: hidden;
+      word-break: keep-all;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,255,136,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(88,166,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* 배경 그리드 */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(48,54,61,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(48,54,61,0.3) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,255,136,0.08);
+      border: 1px solid rgba(0,255,136,0.25);
+      border-radius: 999px;
+      padding: 0.45rem 1.2rem;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 2rem;
+      animation: fadeDown 0.6s ease both;
+      letter-spacing: 0.01em;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s ease infinite;
+    }
+
+    .hero h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.15;
+      animation: fadeDown 0.7s ease 0.1s both;
+    }
+
+    .hero h1 .accent { color: var(--green); }
+
+    .hero p {
+      margin-top: 1.5rem;
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      color: var(--text-dim);
+      text-align: center;
+      max-width: 560px;
+      line-height: 1.85;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      font-weight: 400;
+      animation: fadeDown 0.7s ease 0.2s both;
+    }
+
+    .install-box {
+      margin-top: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      animation: fadeDown 0.7s ease 0.3s both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .install-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,255,136,0.03), transparent);
+      animation: shimmer 3s ease infinite;
+    }
+
+    .install-box .prompt { color: var(--green); }
+    .install-box .cmd { color: var(--text); }
+
+    .copy-btn {
+      margin-left: auto;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: var(--green); color: var(--green); }
+
+    .hero-links {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      animation: fadeDown 0.7s ease 0.4s both;
+    }
+
+    .btn {
+      padding: 0.65rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #0d1117;
+      border: none;
+    }
+    .btn-primary:hover { background: var(--green-dim); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      animation: fadeDown 1s ease 0.8s both;
+    }
+
+    .scroll-hint .arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      transform: rotate(45deg);
+      animation: bounce 1.5s ease infinite;
+    }
+
+    /* ── WHY ── */
+    .why {
+      padding: 6rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: clamp(1.55rem, 3vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 1.25rem;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    .section-desc {
+      color: var(--text-dim);
+      font-size: 0.97rem;
+      line-height: 1.85;
+      max-width: 640px;
+      margin: 0 auto;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .pain-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .pain-card:hover { border-color: #444c56; }
+
+    .pain-card .icon {
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .pain-card h3 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+
+    .pain-card p {
+      font-size: 0.87rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+
+    .pain-card .strike {
+      text-decoration: line-through;
+      color: var(--red);
+      opacity: 0.7;
+    }
+
+    .pain-card .after {
+      color: var(--green);
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 0.75rem;
+      display: block;
+      letter-spacing: -0.01em;
+    }
+
+    .pain-card .after code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      font-weight: 400;
+      background: rgba(0,255,136,0.1);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 4rem 2rem 6rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .feature-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,255,136,0.3);
+    }
+
+    .card-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 1.8;
+    }
+
+    .icon-green svg { stroke: #00ff88; }
+    .icon-blue svg { stroke: #58a6ff; }
+    .icon-yellow svg { stroke: #ffa657; }
+
+    .icon-green { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.2); }
+    .icon-blue { background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.2); }
+    .icon-yellow { background: rgba(255,166,87,0.1); border: 1px solid rgba(255,166,87,0.2); }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      line-height: 1.5;
+    }
+
+    .card-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+    /* 터미널 블록 */
+    .terminal {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+    }
+
+    .terminal-bar {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff6058; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #28c840; }
+
+    .terminal-content { padding: 0.9rem 1.1rem; line-height: 2.0; }
+    .t-prompt { color: var(--green); }
+    .t-cmd { color: var(--text); }
+    .t-out { color: var(--text-dim); }
+    .t-success { color: var(--green); }
+    .t-info { color: var(--blue); }
+    .t-warn { color: var(--yellow); }
+
+    .flow-steps {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--green);
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .step-text {
+      color: var(--text-dim);
+      line-height: 1.6;
+      padding-top: 2px;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      font-size: 0.88rem;
+    }
+    .step-text strong { color: var(--text); font-weight: 600; }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 6rem 2rem;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .how-header { text-align: center; margin-bottom: 3.5rem; }
+
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .pipeline::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      bottom: 24px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--green), var(--blue), transparent);
+    }
+
+    .pipeline-step {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.25rem 0;
+      position: relative;
+    }
+
+    .pipe-dot {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--green);
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .pipe-content h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+    .pipe-content p {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+
+    .pipe-code {
+      margin-top: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--blue);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      display: inline-block;
+    }
+
+    /* ── INSTALL ── */
+    .install-section {
+      padding: 6rem 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .big-install {
+      margin-top: 2rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .big-install .terminal-bar { justify-content: space-between; }
+
+    .big-install-code {
+      padding: 1.5rem 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      text-align: left;
+    }
+
+    .install-steps {
+      margin-top: 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      text-align: left;
+    }
+
+    .install-step {
+      padding: 1rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .install-step .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--green);
+      margin-bottom: 0.4rem;
+    }
+
+    .install-step p {
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    footer span { color: var(--green); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50% { transform: rotate(45deg) translateY(4px); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 640px) {
+      .feature-cards { grid-template-columns: 1fr; }
+      .install-steps { grid-template-columns: 1fr; }
+      .pipeline::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="grid-bg"></div>
+
+    <div class="badge">v1.0.0 — npm에서 바로 사용 가능</div>
+
+    <h1>
+      <span class="accent">chrys-tools</span><br/>
+      Claude Code, 팀 도구로
+    </h1>
+
+    <p>
+      <code style="font-family:'JetBrains Mono',monospace; color:var(--green); font-size:0.9em;">npx chrys-tools install</code> 한 번으로<br/>
+      Jira 분석 · 서버 배포 · README 생성을 Claude Code에서 바로 사용
+    </p>
+
+    <div class="install-box">
+      <span class="prompt">$</span>
+      <span class="cmd">npx chrys-tools install</span>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('npx chrys-tools install');this.textContent='✓ 복사됨'">복사</button>
+    </div>
+
+    <div class="hero-links">
+      <a class="btn btn-primary" href="#features">기능 보기</a>
+      <a class="btn btn-ghost" href="#install">설치 가이드</a>
+    </div>
+
+    <div class="scroll-hint">
+      <span>스크롤</span>
+      <div class="arrow"></div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="why reveal">
+    <h2 class="section-title">반복 작업을 자연어 한 마디로</h2>
+    <p class="section-desc">
+      Jira 티켓 찾고, 서버 SSH 접속하고, README 작성하는 시간을
+      코드에 쓰세요. chrys-tools가 나머지를 처리합니다.
+    </p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="icon"><i data-lucide="search" style="width:22px;height:22px;stroke:var(--text-dim);stroke-width:1.8"></i></div>
+        <h3>Jira 이슈 수동 추적</h3>
+        <p class="strike">티켓 열고 → 코드 찾고 → 수동 수정</p>
+        <span class="after"><code>"ABEH-1234 수정해줘"</code> → 자동 처리</span>
+      </div>
+      <div class="pain-card">
+        <div class="icon"><i data-lucide="server" style="width:22px;height:22px;stroke:var(--text-dim);stroke-width:1.8"></i></div>
+        <h3>서버 배포 반복 작업</h3>
+        <p class="strike">SSH 접속 → git pull → npm run build</p>
+        <span class="after"><code>"qa 배포해줘"</code> → 완료</span>
+      </div>
+      <div class="pain-card">
+        <div class="icon"><i data-lucide="file-text" style="width:22px;height:22px;stroke:var(--text-dim);stroke-width:1.8"></i></div>
+        <h3>README 매번 작성</h3>
+        <p class="strike">코드 분석해서 직접 문서 작성</p>
+        <span class="after"><code>"README 만들어줘"</code> → 자동 생성</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="features-header reveal">
+      <h2 class="section-title">3가지 핵심 Skills</h2>
+    </div>
+
+    <div class="feature-cards">
+
+      <!-- Jira -->
+      <div class="feature-card reveal">
+        <div class="card-header">
+          <div class="card-icon icon-green"><i data-lucide="bug"></i></div>
+          <div>
+            <div class="card-title">Jira 이슈 분석 & 수정</div>
+            <div class="card-subtitle">티켓 → 코드 탐색 → 수정 → 테스트 자동화</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="terminal">
+            <div class="terminal-bar">
+              <div class="dot dot-red"></div>
+              <div class="dot dot-yellow"></div>
+              <div class="dot dot-green"></div>
+            </div>
+            <div class="terminal-content">
+              <div><span class="t-prompt">you › </span><span class="t-cmd">ABEH-1234 수정해줘</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-out">  티켓 분석 → 코드 탐색 → 수정안 검토</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-success">✓ 수정 완료 · 테스트 통과</span></div>
+            </div>
+          </div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Fast Lane</strong> — 위치 명확 시 자동 처리</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>두 에이전트 토론</strong> — 구현 vs 리뷰</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Before/After 보고서</strong> 자동 생성</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deploy -->
+      <div class="feature-card reveal">
+        <div class="card-header">
+          <div class="card-icon icon-blue"><i data-lucide="upload-cloud"></i></div>
+          <div>
+            <div class="card-title">QA / CI 서버 배포</div>
+            <div class="card-subtitle">SSH 연결 · git pull · 빌드까지 자동</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="terminal">
+            <div class="terminal-bar">
+              <div class="dot dot-red"></div>
+              <div class="dot dot-yellow"></div>
+              <div class="dot dot-green"></div>
+            </div>
+            <div class="terminal-content">
+              <div><span class="t-prompt">you › </span><span class="t-cmd">qa 배포해줘</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-out">  SSH → git pull → 최신 커밋 확인</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-success">✅ QA 배포 완료</span></div>
+            </div>
+          </div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>PuTTY/plink</strong> 자동 감지 (Windows)</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>uncommitted 변경사항</strong> 처리 옵션 제공</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>nvm 버전</strong> 자동 전환 후 빌드</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- README -->
+      <div class="feature-card reveal">
+        <div class="card-header">
+          <div class="card-icon icon-yellow"><i data-lucide="file-edit"></i></div>
+          <div>
+            <div class="card-title">README 자동 생성</div>
+            <div class="card-subtitle">코드 분석 → 문서 자동 작성</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="terminal">
+            <div class="terminal-bar">
+              <div class="dot dot-red"></div>
+              <div class="dot dot-yellow"></div>
+              <div class="dot dot-green"></div>
+            </div>
+            <div class="terminal-content">
+              <div><span class="t-prompt">you › </span><span class="t-cmd">README 만들어줘</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-out">  구조 · 스택 · 코드 패턴 병렬 분석</span></div>
+              <div style="height:0.3rem"></div>
+              <div><span class="t-success">✓ README.md 생성 완료</span></div>
+            </div>
+          </div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>서브에이전트 3개</strong> 병렬 분석</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>섹션 커스터마이즈</strong> 직접 선택 가능</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>프로젝트 루트</strong>에 자동 저장</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="how-inner">
+      <div class="how-header reveal">
+        <h2 class="section-title">설치 한 번, 어디서나 동작</h2>
+        <p class="section-desc" style="margin:0 auto;color:var(--text-dim);line-height:1.8;max-width:560px;">
+          Claude Code는 시작 시 <code style="font-family:'JetBrains Mono',monospace;color:var(--blue)">~/.claude/</code>를 자동으로 읽습니다.<br/>
+          chrys-tools는 이 경로에 Skills를 설치해 어느 프로젝트에서나 동작합니다.
+        </p>
+      </div>
+
+      <div class="pipeline reveal">
+        <div class="pipeline-step">
+          <div class="pipe-dot">01</div>
+          <div class="pipe-content">
+            <h3>install 실행</h3>
+            <p>설치할 기능 선택 · Jira API Token · 서버 SSH 정보 입력</p>
+            <div class="pipe-code">$ npx chrys-tools install</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-dot">02</div>
+          <div class="pipe-content">
+            <h3>~/.claude/ 자동 구성</h3>
+            <p>CLAUDE.md · settings.json · config.json · skills/ 자동 생성</p>
+            <div class="pipe-code">~/.claude/skills/issue-analyzer/SKILL.md</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-dot">03</div>
+          <div class="pipe-content">
+            <h3>Claude Code에서 바로 사용</h3>
+            <p>어느 프로젝트에서 Claude Code를 열어도 Skills가 자동으로 활성화</p>
+            <div class="pipe-code">"ABEH-1234 수정해줘" · "qa 배포해줘"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section class="install-section" id="install">
+    <div class="reveal">
+      <h2 class="section-title">30초면 끝납니다</h2>
+    </div>
+
+    <div class="big-install reveal">
+      <div class="terminal-bar">
+        <div style="display:flex;gap:0.4rem;">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <span style="font-size:0.85rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">terminal</span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('npx chrys-tools install');this.textContent='✓'">복사</button>
+      </div>
+      <div class="big-install-code">
+        <span style="color:var(--green)">$</span>
+        <span style="color:var(--text)"> npx chrys-tools install</span>
+      </div>
+    </div>
+
+    <div class="install-steps reveal">
+      <div class="install-step">
+        <div class="num">01 / 기능 선택</div>
+        <p>Jira 분석 · 서버 배포 · README 생성 중 원하는 기능만 선택</p>
+      </div>
+      <div class="install-step">
+        <div class="num">02 / 정보 입력</div>
+        <p>Jira API Token, 서버 SSH 정보를 대화형 프롬프트로 입력</p>
+      </div>
+      <div class="install-step">
+        <div class="num">03 / 바로 사용</div>
+        <p>설치 완료 후 어느 프로젝트에서나 Claude Code에서 바로 동작</p>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;" class="reveal">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.45rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.87rem;color:var(--text-dim);">npx chrys-tools add jira</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.45rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.87rem;color:var(--text-dim);">npx chrys-tools config deploy</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.45rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.87rem;color:var(--text-dim);">npx chrys-tools list</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>chrys-tools</span> · MIT License · TypeScript · Node.js
+  </footer>
+
+  <script>
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Stagger feature cards
+    document.querySelectorAll('.feature-card').forEach((el, i) => {
+      el.style.transitionDelay = `${i * 0.1}s`;
+    });
+
+    // Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

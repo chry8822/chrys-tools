@@ -15,6 +15,11 @@ import {
   SKILL_LABEL as DEPLOY_LABEL,
   getInstallPath as getDeployPath,
 } from '../skills/server-deploy/index.js';
+import {
+  install as installPresent,
+  SKILL_LABEL as PRESENT_LABEL,
+  getInstallPath as getPresentPath,
+} from '../skills/present-generator/index.js';
 import { registerIssueAnalyzerPermissions, registerAtlassianMcp } from '../utils/settings.js';
 import { existsSync } from 'fs';
 
@@ -148,7 +153,22 @@ export async function addCommand(skillArg: string): Promise<void> {
     return;
   }
 
+  if (skill === 'present' || skill === 'present-generator') {
+    intro(`${PRESENT_LABEL} 추가`);
+
+    const targetPath = getPresentPath();
+    if (existsSync(targetPath)) {
+      log.warn('이미 설치되어 있습니다: ' + targetPath);
+    }
+
+    installPresent();
+    note(`✅ ${PRESENT_LABEL} → ${targetPath}`, '설치 완료');
+    note('"발표 자료 만들어줘"\n"프로젝트 소개 HTML 만들어줘"', '사용 예시');
+    outro('완료!');
+    return;
+  }
+
   console.error(`알 수 없는 skill: "${skillArg}"`);
-  console.error('사용 가능한 skill: jira, readme, deploy');
+  console.error('사용 가능한 skill: jira, readme, deploy, present');
   process.exit(1);
 }
