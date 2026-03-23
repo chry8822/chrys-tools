@@ -14,6 +14,7 @@ interface Settings {
 
 // issue-analyzer skill 실행에 필요한 권한 목록
 const ISSUE_ANALYZER_PERMISSIONS = [
+  // Bash 권한
   'Bash(git log*)',
   'Bash(git blame*)',
   'Bash(git diff*)',
@@ -22,6 +23,17 @@ const ISSUE_ANALYZER_PERMISSIONS = [
   'Bash(npm run test*)',
   'Bash(pytest*)',
   'Bash(go test*)',
+  // Atlassian MCP 권한 (claude.ai 연동)
+  'mcp__claude_ai_Atlassian__getJiraIssue',
+  'mcp__claude_ai_Atlassian__getAccessibleAtlassianResources',
+  'mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql',
+  'mcp__claude_ai_Atlassian__getConfluencePage',
+  'mcp__claude_ai_Atlassian__searchConfluenceUsingCql',
+  'mcp__claude_ai_Atlassian__searchAtlassian',
+  'mcp__claude_ai_Atlassian__addCommentToJiraIssue',
+  'mcp__claude_ai_Atlassian__transitionJiraIssue',
+  // mcp-atlassian-jira (install 시 자동 설정되는 MCP)
+  'mcp__mcp-atlassian-jira__*',
 ];
 
 function readSettings(): Settings {
