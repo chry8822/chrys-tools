@@ -1,5 +1,11 @@
 # claude-skills
 
+## 주의사항
+
+이 프로젝트는 완전히 새로운 패키지다.
+같은 머신의 다른 폴더를 참고하거나 읽지 않는다.
+오직 이 CLAUDE.md와 사용자 지시만 따른다.
+
 ## 프로젝트 개요
 
 `claude-skills`는 Claude Code용 Skills를 글로벌로 설치해주는 npm CLI 패키지다.
@@ -26,6 +32,7 @@ cursor-setup (팀 Cursor 룰 배포 CLI)과 동일한 배포 철학으로 설계
 ## 핵심 동작 원리
 
 Claude Code는 시작 시 아래 경로를 자동으로 읽는다:
+
 - `~/.claude/CLAUDE.md` — 글로벌 컨텍스트
 - `~/.claude/skills/` — 글로벌 skills
 
@@ -67,6 +74,7 @@ claude-skills/
 ## CLI 커맨드 목록
 
 ### `npx claude-skills install`
+
 메인 설치 커맨드. 최초 설치 시 사용.
 
 ```
@@ -79,19 +87,24 @@ claude-skills/
 ```
 
 ### `npx claude-skills add <skill명>`
+
 특정 skill만 추가 설치.
+
 ```
 예: npx claude-skills add jira
 ```
 
 ### `npx claude-skills config <skill명>`
+
 설치된 skill의 설정 변경.
+
 ```
 예: npx claude-skills config jira
 → Jira URL, API Token, Project Key 재입력
 ```
 
 ### `npx claude-skills list`
+
 현재 설치된 skill 목록 출력.
 
 ---
@@ -113,7 +126,7 @@ $ npx claude-skills install
 
 ─── Jira 이슈 분석 설정 ───────────────
   이 기능은 Jira API 연동이 필요합니다.
-  
+
 ? Jira Base URL을 입력하세요
   예: https://your-company.atlassian.net
   > _
@@ -147,12 +160,14 @@ $ npx claude-skills install
 ### 1. README 자동 생성 (`readme-generator`)
 
 **트리거 예시** (SKILL.md description에 포함):
+
 - "README 만들어줘"
 - "리드미 작성해줘"
 - "README.md 생성해줘"
 - "프로젝트 문서 만들어줘"
 
 **동작**:
+
 1. 사용자에게 구성 방식 선택 요청
    - [1] 기본 양식 (일반적인 README 구성)
    - [2] 커스텀 구성 (섹션 직접 선택)
@@ -189,12 +204,14 @@ $ npx claude-skills install
 ### 2. Jira 이슈 분석 (`issue-analyzer`)
 
 **트리거 예시**:
+
 - "XBHL-1234 분석해줘"
 - "[티켓키]-[번호] 이슈 파악해줘"
 - "이 이슈 어디서 난 거야"
 - "티켓 분석해줘"
 
 **동작**:
+
 1. 티켓 번호 파싱 (트리거 메시지에서 추출)
 2. Sub-agents 병렬 실행
    - Sub-agent 1: Atlassian MCP → 티켓 내용 조회
