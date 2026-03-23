@@ -1,6 +1,6 @@
 {
   "name": "chrys-tools",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Claude Code용 Skills 글로벌 설치 도구",
   "main": "dist/index.js",
   "bin": {
