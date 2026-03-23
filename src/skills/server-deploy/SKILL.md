@@ -26,15 +26,19 @@ npx chrys-tools add deploy 를 실행하여 설정하세요.
 
 ## 실행 순서
 
-### 1단계: 브랜치 입력
+### 1단계: 프로젝트 + 브랜치 입력
 
-사용자에게 배포할 브랜치를 묻습니다:
+사용자에게 프로젝트명과 브랜치를 순서대로 묻습니다:
 
 ```
+프로젝트: (예: care, caregiver, protector)
 브랜치:
 ```
 
-사용자가 브랜치를 입력하면 다음 단계로 진행합니다.
+입력받은 프로젝트명을 config의 `basePath`에 붙여 최종 경로를 구성합니다:
+- basePath: `/app/front` + 프로젝트: `care` → `/app/front/care`
+
+사용자가 이미 "care 프로젝트 dealHistory 브랜치로 ci 배포해줘"처럼 한 번에 말했다면 따로 묻지 않고 바로 진행합니다.
 
 ---
 
@@ -63,24 +67,19 @@ ping -n 2 -w 2000 <host>
 
 ### 3단계: fetch + pull + 최신 커밋 확인
 
-**경로 변경이 필요한 경우:**
-사용자가 대화 중에 경로를 명시하면 config 경로 대신 해당 경로를 사용합니다.
-```
-"qa 배포하는데 경로는 /app/frontend야"  → /app/frontend 사용
-"이번엔 /app/front-v2로 배포해줘"       → /app/front-v2 사용
-```
-영구 변경은 `npx chrys-tools config deploy` 로 가능하다고 안내합니다.
+1단계에서 입력받은 프로젝트명과 basePath를 합쳐 최종 경로 구성:
+- `<basePath>/<project>` (예: `/app/front/care`)
 
 SSH로 서버에 접속해 아래 명령어를 순서대로 실행합니다:
 
 ```bash
-cd <projectPath> && git fetch origin && git checkout <branch> && git pull origin <branch> && git log --oneline -5
+cd <basePath>/<project> && git fetch origin && git checkout <branch> && git pull origin <branch> && git log --oneline -5
 ```
 
 결과를 아래 형식으로 출력합니다:
 
 ```
-## 최신 커밋 내역 (QA / branch: develop)
+## 최신 커밋 내역 (CI / care / branch: dealHistory)
 
 a1b2c3d 로그인 화면 API 연동 수정
 e4f5g6h 사용자 목록 페이지네이션 추가
@@ -161,8 +160,14 @@ cd <projectPath>
 
 ### 5단계: 빌드 실행
 
+config에 `nodeVersion`이 있으면 nvm으로 버전을 먼저 지정합니다:
+
 ```bash
-cd <projectPath> && npm run build 2>&1
+# nodeVersion 있는 경우 (예: "14")
+cd <basePath>/<project> && source ~/.nvm/nvm.sh && nvm use <nodeVersion> && npm run build 2>&1
+
+# nodeVersion 없는 경우
+cd <basePath>/<project> && npm run build 2>&1
 ```
 
 빌드 진행 중임을 안내합니다:
