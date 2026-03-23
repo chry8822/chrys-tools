@@ -386,8 +386,29 @@ footer span { color:var(--green); }
 
 ## 출력 규칙
 
-- 파일명: `presentation.html` (프로젝트 루트)
 - 단일 파일 (인라인 CSS, CDN 폰트·lucide만 외부)
 - 정보 없는 섹션은 과감히 생략 (빈 섹션 금지)
 - 언어: README 언어 따름 (없으면 한국어)
-- 생성 완료 후: `presentation.html 생성 완료! 브라우저에서 열어보세요.` 출력
+
+### 기존 파일 처리
+
+생성 전 프로젝트 루트에 `presentation.html`이 이미 있으면 덮어쓰지 말고 먼저 확인합니다:
+
+```
+presentation.html 이 이미 존재합니다.
+
+[1] 덮어쓰기          (기존 파일 교체)
+[2] 새 파일로 저장    (presentation-2.html, presentation-3.html 순으로 번호 증가)
+[3] 취소
+```
+
+- **[1]** → `presentation.html` 덮어쓰기
+- **[2]** → 존재하지 않는 번호를 찾아 `presentation-N.html`로 저장
+- **[3]** → 생성 중단
+
+### 완료 메시지
+
+```
+✅ presentation.html 생성 완료!
+브라우저에서 열어보세요.
+```
