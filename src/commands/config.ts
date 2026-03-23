@@ -3,6 +3,7 @@ import { handleCancel, isSkipped } from '../utils/prompt.js';
 import { setSkillConfig, getSkillConfig } from '../utils/config.js';
 import { registerAtlassianMcp } from '../utils/settings.js';
 import { SKILL_NAME as ISSUE_SKILL } from '../skills/issue-analyzer/index.js';
+import { SKILL_NAME as DEPLOY_SKILL } from '../skills/server-deploy/index.js';
 
 export async function configCommand(skillArg: string): Promise<void> {
   const skill = skillArg.toLowerCase();
@@ -86,6 +87,55 @@ export async function configCommand(skillArg: string): Promise<void> {
     return;
   }
 
-  console.error(`설정 가능한 skill: jira`);
+  if (skill === 'deploy' || skill === 'server-deploy') {
+    intro('서버 배포 — 설정 변경');
+
+    const existing = getSkillConfig(DEPLOY_SKILL) as { servers?: Record<string, { host: string; user: string; password?: string; projectPath: string }> } | undefined;
+
+    for (const serverType of ['qa', 'ci']) {
+      const cur = existing?.servers?.[serverType];
+      log.step(`${serverType.toUpperCase()} 서버 (현재: ${cur ? cur.host : '미설정'})`);
+      log.info('엔터를 누르면 기존 값을 유지합니다.');
+
+      const host = await text({ message: '호스트', placeholder: cur?.host ?? '192.168.1.100' });
+      handleCancel(host);
+
+      const user = await text({ message: 'SSH 사용자명', placeholder: cur?.user ?? 'ubuntu' });
+      handleCancel(user);
+
+      const pwd = serverType === 'qa'
+        ? await password({ message: '비밀번호 (유지하려면 엔터)', mask: '*' })
+        : null;
+      if (pwd) handleCancel(pwd);
+
+      const projectPath = await text({ message: '프로젝트 경로', placeholder: cur?.projectPath ?? '/app/front' });
+      handleCancel(projectPath);
+
+      const updated: Record<string, string> = {
+        host: isSkipped(host) ? (cur?.host ?? '') : (host as string).trim(),
+        user: isSkipped(user) ? (cur?.user ?? '') : (user as string).trim(),
+        projectPath: isSkipped(projectPath) ? (cur?.projectPath ?? '') : (projectPath as string).trim(),
+      };
+
+      if (serverType === 'qa') {
+        const pwdStr = pwd == null || isSkipped(pwd as string) ? (cur?.password ?? '') : (pwd as string).trim();
+        if (pwdStr) updated.password = pwdStr;
+      }
+
+      const servers = existing?.servers ?? {};
+      servers[serverType] = updated;
+      setSkillConfig(DEPLOY_SKILL, { servers } as unknown as import('../utils/config.js').SkillConfig);
+
+      note(
+        `호스트: ${updated.host}\n사용자: ${updated.user}\n경로: ${updated.projectPath}`,
+        `${serverType.toUpperCase()} 저장 완료`
+      );
+    }
+
+    outro('완료!');
+    return;
+  }
+
+  console.error(`설정 가능한 skill: jira, deploy`);
   process.exit(1);
 }

@@ -40,6 +40,14 @@ npx chrys-tools add deploy 를 실행하여 설정하세요.
 
 ### 2단계: fetch + pull + 최신 커밋 확인
 
+**경로 변경이 필요한 경우:**
+사용자가 대화 중에 경로를 명시하면 config 경로 대신 해당 경로를 사용합니다.
+```
+"qa 배포하는데 경로는 /app/frontend야"  → /app/frontend 사용
+"이번엔 /app/front-v2로 배포해줘"       → /app/front-v2 사용
+```
+영구 변경은 `npx chrys-tools config deploy` 로 가능하다고 안내합니다.
+
 SSH로 서버에 접속해 아래 명령어를 순서대로 실행합니다:
 
 ```bash
@@ -101,6 +109,15 @@ cd <projectPath> && git checkout . && git pull origin <branch>
 
 **[3] 취소 시:**
 배포를 중단하고 사용자에게 서버 상태를 안내합니다.
+
+#### 경로를 찾을 수 없는 경우 (`No such file or directory`)
+
+```
+❌ 경로를 찾을 수 없습니다: /app/front
+
+올바른 경로를 알려주시면 바로 진행하겠습니다.
+영구 변경은 npx chrys-tools config deploy 로 가능합니다.
+```
 
 #### merge conflict가 있는 경우
 ```
