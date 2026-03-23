@@ -203,22 +203,32 @@ cd <projectPath> && npm run build 2>&1
 
 ## SSH 명령어 구성
 
-**password가 있는 서버 (QA) — plink 우선, sshpass 대체:**
+config에서 아래 항목을 읽어 명령어를 구성합니다:
 
-plink 사용:
+| 항목 | 설명 |
+|------|------|
+| `password` | QA처럼 비밀번호 인증 → `plink -batch -pw` |
+| `sshKeyPath` | CI처럼 .ppk 키 인증 → `plink -batch -i "<path>"` |
+| `nodeVersion` | 빌드 전 nvm으로 Node 버전 지정 → `source ~/.nvm/nvm.sh && nvm use <version>` |
+
+**비밀번호 인증 (QA):**
 ```bash
-plink -batch -pw "<password>" <user>@<host> "<commands>"
+"C:\Program Files (x86)\PuTTY\plink.exe" -batch -pw "<password>" <user>@<host> "<commands>"
 ```
 
-plink 없으면 sshpass:
+**SSH 키 인증 (CI):**
 ```bash
-sshpass -p "<password>" ssh -o StrictHostKeyChecking=no <user>@<host> "<commands>"
+"C:\Program Files (x86)\PuTTY\plink.exe" -batch -i "<sshKeyPath>" <user>@<host> "<commands>"
 ```
 
-**password가 없는 서버 (CI) — SSH 키 인증:**
+**nodeVersion 지정 시 빌드 명령어:**
 ```bash
-ssh -o StrictHostKeyChecking=no <user>@<host> "<commands>"
+source ~/.nvm/nvm.sh && nvm use <nodeVersion> && npm run build 2>&1
 ```
+
+**projectPath에 .git이 없는 경우:**
+서버에서 `find <projectPath> -name '.git' -maxdepth 3`으로 하위 저장소를 탐색하고,
+배포 브랜치가 있는 저장소를 자동으로 선택합니다.
 
 ---
 
