@@ -44,26 +44,20 @@ npx chrys-tools add deploy 를 실행하여 설정하세요.
 
 ### 2단계: 서버 연결 확인
 
-SSH 전에 먼저 서버에 ping을 보내 네트워크 연결 상태를 확인합니다:
+ping은 서버 방화벽에서 막혀 있는 경우가 많으므로 **ping 없이 바로 SSH 연결을 시도**합니다.
 
-```bash
-ping -n 2 -w 2000 <host>
-```
-
-**연결 실패 시 (`Destination host unreachable` 또는 timeout):**
+SSH 연결 자체가 실패하면 (`Connection timed out`, `Network error` 등):
 ```
 ❌ 서버에 연결할 수 없습니다 (<host>)
 
 가능한 원인:
-- 사무실 내부망에 연결되어 있지 않음 (재택 / 외부 네트워크)
-- 네트워크 라우팅 문제 (서브넷 간 접근 차단)
+- 사무실 내부망에 연결되어 있지 않음
 - 서버가 꺼져 있거나 IP가 변경됨
 
-사무실 네트워크(유선/사내 Wi-Fi)에 연결된 상태인지 확인 후 다시 시도해주세요.
 서버 IP가 변경됐다면: npx chrys-tools config deploy
 ```
 
-**연결 성공 시** → 3단계로 진행
+SSH 연결 성공 시 → 3단계로 진행
 
 ### 3단계: fetch + pull + 최신 커밋 확인
 
