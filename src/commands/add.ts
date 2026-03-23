@@ -137,13 +137,8 @@ export async function addCommand(skillArg: string): Promise<void> {
       servers[serverType] = serverEntry;
     }
 
-    if (Object.keys(servers).length === 0) {
-      note('입력된 서버가 없어 설치를 중단합니다.\n다시 실행하려면: npx chrys-tools add deploy', '설치 취소');
-      outro('설치가 취소되었습니다.');
-      return;
-    }
-
-    installDeploy({ servers });
+    // 서버 입력 여부와 관계없이 SKILL.md는 항상 설치
+    installDeploy({ servers: Object.keys(servers).length > 0 ? servers : {} });
     registerIssueAnalyzerPermissions();
 
     const targetPath = getDeployPath();

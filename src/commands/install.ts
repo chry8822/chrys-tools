@@ -176,12 +176,13 @@ export async function installCommand(): Promise<void> {
       servers[serverType] = serverEntry;
     }
 
+    // 서버 입력 여부와 관계없이 SKILL.md는 항상 설치
+    installDeploy({ servers: Object.keys(servers).length > 0 ? servers : {} });
+    registerIssueAnalyzerPermissions();
     if (Object.keys(servers).length > 0) {
-      installDeploy({ servers });
-      registerIssueAnalyzerPermissions();
       results.push({ label: DEPLOY_LABEL, installed: true, path: getDeployPath() });
     } else {
-      results.push({ label: DEPLOY_LABEL, installed: false, reason: 'chrys-tools add deploy로 추가 가능' });
+      results.push({ label: DEPLOY_LABEL, installed: true, path: getDeployPath(), reason: '서버 설정 필요: npx chrys-tools config deploy' });
     }
   }
 
