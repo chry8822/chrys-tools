@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node dist/index.js)",
+      "Bash(node dist/index.js list)",
+      "Bash(node dist/index.js add readme)",
+      "Bash(printf \"https://test.atlassian.net\\\\ntest-token\\\\nTEST\\\\n\")",
+      "Bash(node dist/index.js add jira)",
+      "Bash(node dist/index.js add)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node dist/index.js add unknownSkill)",
+      "Bash(node dist/index.js config)",
+      "Bash(node dist/index.js install)",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "Bash(cd:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npm publish:*)",
+      "Bash(gh auth:*)"
+    ]
+  }
+}

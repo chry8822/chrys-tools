@@ -1,0 +1,31 @@
+{
+  "name": "chrys-tools",
+  "version": "1.0.0",
+  "description": "Claude Code용 Skills 글로벌 설치 도구",
+  "main": "dist/index.js",
+  "bin": {
+    "chrys-tools": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/copy-skills.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["claude", "claude-code", "skills", "ai", "cli"],
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
