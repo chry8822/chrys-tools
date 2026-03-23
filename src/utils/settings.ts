@@ -14,13 +14,20 @@ interface Settings {
 
 // issue-analyzer skill 실행에 필요한 권한 목록
 const ISSUE_ANALYZER_PERMISSIONS = [
+  // 파일 읽기/수정 권한 (이슈 수정 시 확인 없이 자동 적용)
+  'Edit(*)',
+  'Write(*)',
+  'Read(*)',
   // Bash 권한
   'Bash(git log*)',
   'Bash(git blame*)',
   'Bash(git diff*)',
   'Bash(git grep*)',
+  'Bash(git commit*)',
+  'Bash(git push*)',
   'Bash(npm test*)',
   'Bash(npm run test*)',
+  'Bash(npm run build*)',
   'Bash(pytest*)',
   'Bash(go test*)',
   // Atlassian MCP 권한 (claude.ai 연동)
