@@ -38,7 +38,8 @@ export async function addCommand(skillArg: string): Promise<void> {
 
     const baseUrl = await text({
       message: 'Jira Base URL을 입력하세요',
-      placeholder: 'https://your-company.atlassian.net',
+      placeholder: 'https://hmcnetworks.atlassian.net',
+      defaultValue: 'https://hmcnetworks.atlassian.net',
     });
     handleCancel(baseUrl);
 
