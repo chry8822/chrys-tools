@@ -3,7 +3,9 @@
 > Claude Code를 팀 개발 도구로 확장하는 Skills CLI
 
 `npx chrys-tools install` 한 번으로 설치하면 **어느 프로젝트에서 Claude Code를 열어도**
-Jira 이슈 분석·수정, 서버 배포, README 자동 생성 기능을 바로 사용할 수 있습니다.
+Jira 이슈 분석·수정, 서버 배포, README 자동 생성, 발표용 HTML 생성 기능을 바로 사용할 수 있습니다.
+
+**[🌐 라이브 데모 보기](https://chry8822.github.io/chrys-tools/)**
 
 ---
 
@@ -14,6 +16,7 @@ Jira 이슈 분석·수정, 서버 배포, README 자동 생성 기능을 바로
 | **Jira 이슈 분석 & 수정** | `"ABEH-1234 수정해줘"` | 티켓 조회 → 코드 탐색 → 수정 → 테스트 |
 | **QA / CI 서버 배포** | `"qa 배포해줘"` | SSH 접속 → git pull → 빌드 |
 | **README 자동 생성** | `"README 만들어줘"` | 프로젝트 분석 → README.md 생성 |
+| **발표용 HTML 생성** | `"발표 자료 만들어줘"` | 프로젝트 분석 → presentation.html 생성 |
 
 ---
 
@@ -30,6 +33,7 @@ npx chrys-tools install
 │  ◉ README 자동 생성
 │  ◉ Jira 이슈 분석
 │  ◉ 서버 배포 (QA/CI)
+│  ◉ 발표용 HTML 생성
 
 # Jira 이슈 분석 설정
 ◆  Jira Base URL     https://your-company.atlassian.net
@@ -59,6 +63,7 @@ npx chrys-tools install
     issue-analyzer/SKILL.md
     server-deploy/SKILL.md
     readme-generator/SKILL.md
+    present-generator/SKILL.md
 ```
 
 ---
@@ -280,13 +285,67 @@ npx chrys-tools config deploy
 
 ---
 
+### 4. 발표용 HTML 생성
+
+현재 프로젝트를 분석해 세련된 다크 터미널 테마의 발표/소개용 HTML 페이지를 자동으로 생성합니다.
+
+#### 사용 예시
+
+```
+"발표 자료 만들어줘"
+"프로젝트 소개 HTML 만들어줘"
+"소개 페이지 만들어줘"
+"프레젠테이션 만들어줘"
+```
+
+#### 동작 흐름
+
+```
+1단계  병렬 분석 (3개 동시)
+       ├─ 프로젝트 구조 · package.json · 버전 파악
+       ├─ 기술 스택 (dependencies 분석)
+       └─ README · 코드에서 목적 · 기능 추출
+
+2단계  누락 정보 확인 (한 번에 모아서 질문)
+
+3단계  presentation.html 생성 → 프로젝트 루트에 저장
+```
+
+#### 생성되는 HTML 구성
+
+- **Hero** — 프로젝트명 · 슬로건 · 설치 명령어
+- **Why** — 문제 제기 · before/after 카드
+- **Features** — 기능 카드 + 터미널 예시 블록
+- **How it works** — 단계별 파이프라인 플로우
+- **Tech Stack** — 기술 스택 뱃지
+- **시작하기** — 설치 방법
+
+#### 인터랙션
+
+- 스크롤 progress bar · 우측 nav dots
+- Hero 타이핑 애니메이션 · 마우스 parallax
+- 터미널 블록 타이핑 시퀀스 (화면 진입 시 자동 실행)
+- Feature 카드 3D tilt · stagger reveal
+
+#### 기존 파일 처리
+
+`presentation.html`이 이미 있으면 선택합니다:
+
+```
+[1] 덮어쓰기
+[2] 새 파일로 저장  (presentation-2.html)
+[3] 취소
+```
+
+---
+
 ## 토큰 & 속도 최적화
 
 반복 작업과 추론 작업을 다른 모델로 분리해 비용과 속도를 최적화합니다.
 
 | 작업 | 모델 |
 |------|------|
-| Jira 조회, 코드 검색, Git 탐색, 테스트 실행 | Haiku (저렴·빠름) |
+| Jira 조회, 코드 검색, Git 탐색, 테스트 실행, HTML 생성 | Haiku (저렴·빠름) |
 | 복잡도 판단, 수정 계획, 코드 수정, 리뷰 | Sonnet (품질) |
 
 **병렬 실행:** 탐색 단계에서 서브에이전트 3개를 동시에 실행합니다.
@@ -345,6 +404,7 @@ npx chrys-tools config deploy
 npx chrys-tools add jira
 npx chrys-tools add deploy
 npx chrys-tools add readme
+npx chrys-tools add present
 
 # 설정 변경
 npx chrys-tools config jira      # Jira URL / API Token / Project Key 변경
