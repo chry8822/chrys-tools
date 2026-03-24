@@ -2,3 +2,6 @@ node_modules/
 dist/
 *.tgz
 .env
+WORK_LOG.md
+COMMIT_MSG_TEMP.txt
+.claude/settings.local.json
