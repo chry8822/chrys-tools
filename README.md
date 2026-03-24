@@ -5,7 +5,7 @@
 `npx chrys-tools install` 한 번으로 설치하면 **어느 프로젝트에서 Claude Code를 열어도**
 Jira 이슈 분석·수정, 서버 배포, README 자동 생성, 발표용 HTML 생성 기능을 바로 사용할 수 있습니다.
 
-**[🌐 라이브 데모 보기](https://chry8822.github.io/chrys-tools/)**
+[![chrys-tools preview](docs/preview.png)](https://chry8822.github.io/chrys-tools/)
 
 ---
 
