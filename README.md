@@ -15,8 +15,29 @@ Jira 이슈 분석·수정, 서버 배포, README 자동 생성, 발표용 HTML 
 |------|-----------|------|
 | **Jira 이슈 분석 & 수정** | `"ABEH-1234 수정해줘"` | 티켓 조회 → 코드 탐색 → 수정 → 테스트 |
 | **QA / CI 서버 배포** | `"qa 배포해줘"` | SSH 접속 → git pull → 빌드 |
+| **git 커밋** | `"/commit"` | 변경사항 분석 → 타입 선택 → 메시지 생성 → 커밋 |
 | **README 자동 생성** | `"README 만들어줘"` | 프로젝트 분석 → README.md 생성 |
 | **발표용 HTML 생성** | `"발표 자료 만들어줘"` | 프로젝트 분석 → presentation.html 생성 |
+| **세션 노트 자동 저장** | 커밋 시 자동 감지 | 작업 내용·결정사항 → memory + WORK_LOG.md 저장 |
+
+---
+
+## 사전 준비 (신규 사용자 필독)
+
+### 서버 배포를 사용하려면
+
+| 항목 | 설명 |
+|------|------|
+| **PuTTY 또는 KiTTY 설치** | `plink.exe`가 필요합니다. KiTTY/PuTTY 설치 시 자동 포함됩니다. |
+| **CI 서버용 .ppk 키 파일** | CI는 SSH 키 인증이므로 `.ppk` 파일 경로가 필요합니다. |
+| **VPN 연결** | QA/CI가 내부망인 경우 VPN 연결이 필요합니다. |
+
+### Jira 이슈 분석을 사용하려면
+
+| 항목 | 설명 |
+|------|------|
+| **Atlassian API 토큰** | [Atlassian 계정 → 보안 → API 토큰](https://id.atlassian.com/manage-profile/security/api-tokens)에서 발급 |
+| **별도 MCP 설정 불필요** | `npx chrys-tools install` 시 Jira MCP가 자동으로 `~/.claude/settings.json`에 등록됩니다. claude.ai Atlassian 연동과 무관하게 동작합니다. |
 
 ---
 
@@ -251,7 +272,61 @@ npx chrys-tools config deploy
 
 ---
 
-### 3. README 자동 생성
+### 3. git 커밋
+
+변경사항을 분석해 커밋 타입 선택 → 메시지 자동 생성 → 커밋까지 한 번에 처리합니다.
+
+#### 사용 예시
+
+```
+"/commit"                                          ← 타입 선택부터 순서대로
+"/commit fix: 로그인 토큰 갱신 오류 수정"          ← 제목 직접 입력 시 바로 커밋
+"/commit [ABEH-2966] - 거래정보 기간 불일치 수정"
+```
+
+#### 동작 흐름
+
+```
+제목 없이 /commit
+  ├─ 1단계: git status + git diff 분석
+  ├─ 2단계: 커밋 타입 선택 (feat/fix/refactor/style/chore/docs/test)
+  ├─ 3단계: 메시지 초안 생성 → 확인 [y/n/수정]
+  └─ 4단계: 커밋 실행 → push 여부 확인
+
+제목 포함 /commit [메시지]
+  └─ 바로 커밋 실행 → push 여부 확인
+```
+
+---
+
+### 4. 세션 노트 자동 저장
+
+커밋할 때마다 오늘 작업 내용과 결정사항을 저장할지 묻습니다.
+
+#### 동작 방식
+
+```
+git commit 완료
+  → Windows 알림 팝업
+  → Claude 채팅에 "저장할까요? [Y/N]" 질문
+  → Y 선택 시 memory + WORK_LOG.md에 저장
+
+세션 종료 시
+  → 최근 커밋 내역을 WORK_LOG.md에 자동 저장 (Claude 없이 스크립트 처리)
+```
+
+#### 저장 위치
+
+| 파일 | 내용 |
+|------|------|
+| `~/.claude/projects/[프로젝트]/memory/` | 다음 세션에서 이어서 작업할 수 있도록 컨텍스트 유지 |
+| `WORK_LOG.md` (프로젝트 루트) | 날짜별 작업 기록 누적 (.gitignore에 자동 추가) |
+
+> 다음 세션에서 "지난 작업 요약해줘"라고 하면 WORK_LOG.md 기반으로 정리해줍니다.
+
+---
+
+### 6. README 자동 생성
 
 현재 프로젝트 코드를 분석해서 README.md를 자동으로 작성합니다.
 
@@ -285,7 +360,7 @@ npx chrys-tools config deploy
 
 ---
 
-### 4. 발표용 HTML 생성
+### 7. 발표용 HTML 생성
 
 현재 프로젝트를 분석해 세련된 다크 터미널 테마의 발표/소개용 HTML 페이지를 자동으로 생성합니다.
 
