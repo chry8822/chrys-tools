@@ -21,3 +21,9 @@ COMMIT_MSG_TEMP.txt
 
 # 블로그 포스트 자동 생성 결과물
 blog-output/
+
+# 개인 아이디어 메모 (커밋 불필요)
+MOBILE_NOTIFY_IDEA.md
+
+# 발표용 HTML 작업 파일 (배포는 docs/index.html로 진행)
+presentation*.html
