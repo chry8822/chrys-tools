@@ -12,8 +12,7 @@ export interface ServerConfig {
   host: string;
   user: string;
   password?: string;
-  projectPath: string;
-  branch: string;
+  basePath: string;
 }
 
 export interface DeployConfig {

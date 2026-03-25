@@ -90,7 +90,7 @@ export async function configCommand(skillArg: string): Promise<void> {
   if (skill === 'deploy' || skill === 'server-deploy') {
     intro('서버 배포 — 설정 변경');
 
-    const existing = getSkillConfig(DEPLOY_SKILL) as { servers?: Record<string, { host: string; user: string; password?: string; projectPath: string }> } | undefined;
+    const existing = getSkillConfig(DEPLOY_SKILL) as { servers?: Record<string, { host: string; user: string; password?: string; basePath: string }> } | undefined;
 
     for (const serverType of ['qa', 'ci']) {
       const cur = existing?.servers?.[serverType];
@@ -108,13 +108,13 @@ export async function configCommand(skillArg: string): Promise<void> {
         : null;
       if (pwd) handleCancel(pwd);
 
-      const projectPath = await text({ message: '프로젝트 경로', placeholder: cur?.projectPath ?? '/app/front' });
-      handleCancel(projectPath);
+      const basePath = await text({ message: '베이스 경로', placeholder: cur?.basePath ?? '/app/front', defaultValue: cur?.basePath ?? '/app/front' });
+      handleCancel(basePath);
 
       const updated: Record<string, string> = {
         host: isSkipped(host) ? (cur?.host ?? '') : (host as string).trim(),
         user: isSkipped(user) ? (cur?.user ?? '') : (user as string).trim(),
-        projectPath: isSkipped(projectPath) ? (cur?.projectPath ?? '') : (projectPath as string).trim(),
+        basePath: isSkipped(basePath) ? (cur?.basePath ?? '') : (basePath as string).trim(),
       };
 
       if (serverType === 'qa') {
@@ -127,7 +127,7 @@ export async function configCommand(skillArg: string): Promise<void> {
       setSkillConfig(DEPLOY_SKILL, { servers } as unknown as import('../utils/config.js').SkillConfig);
 
       note(
-        `호스트: ${updated.host}\n사용자: ${updated.user}\n경로: ${updated.projectPath}`,
+        `호스트: ${updated.host}\n사용자: ${updated.user}\n베이스 경로: ${updated.basePath}`,
         `${serverType.toUpperCase()} 저장 완료`
       );
     }
