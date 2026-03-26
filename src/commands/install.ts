@@ -22,6 +22,7 @@ import {
   getInstallPath as getPresentPath,
 } from '../skills/present-generator/index.js';
 import { registerIssueAnalyzerPermissions, registerAtlassianMcp } from '../utils/settings.js';
+import { getSkillConfig } from '../utils/config.js';
 
 interface InstallResult {
   label: string;
@@ -87,35 +88,45 @@ export async function installCommand(): Promise<void> {
     log.info('이 기능은 Jira API 연동이 필요합니다.');
     log.info('건너뛰려면 아무것도 입력하지 않고 엔터를 누르세요.');
 
+    const existingJira = (getSkillConfig('issue-analyzer') as any)?.jira;
+    if (existingJira) log.info('기존 설정이 있습니다. 엔터를 누르면 기존 값을 유지합니다.');
+
     const baseUrl = await text({
-      message: 'Jira Base URL을 입력하세요',
-      placeholder: 'https://hmcnetworks.atlassian.net',
-      defaultValue: 'https://hmcnetworks.atlassian.net',
+      message: 'Jira Base URL',
+      placeholder: 'https://company.atlassian.net',
+      defaultValue: existingJira?.baseUrl ?? '',
     });
     handleCancel(baseUrl);
 
     const email = await text({
-      message: 'Atlassian 계정 이메일을 입력하세요',
+      message: 'Atlassian 계정 이메일',
       placeholder: 'you@company.com',
+      defaultValue: existingJira?.email ?? '',
     });
     handleCancel(email);
 
     const apiToken = await password({
-      message: 'Jira API Token을 입력하세요 (Atlassian 계정 → 보안 → API 토큰)',
+      message: existingJira?.apiToken ? 'Jira API Token (엔터 = 기존 값 유지)' : 'Jira API Token (Atlassian 계정 → 보안 → API 토큰)',
       mask: '*',
     });
     handleCancel(apiToken);
+    const finalApiToken = isSkipped(apiToken as string) && existingJira?.apiToken
+      ? existingJira.apiToken
+      : (apiToken as string);
 
     const projectKey = await text({
-      message: 'Jira Project Key를 입력하세요',
+      message: 'Jira Project Key',
       placeholder: 'ABEH',
-      defaultValue: 'ABEH',
+      defaultValue: existingJira?.projectKey ?? '',
     });
     handleCancel(projectKey);
 
-    // 하나라도 건너뛰면 설치 제외
+    // 기존 값도 없고 새로 입력도 없으면 건너뜀
     const skipped =
-      isSkipped(baseUrl) || isSkipped(email) || isSkipped(apiToken as string) || isSkipped(projectKey);
+      (isSkipped(baseUrl) && !existingJira?.baseUrl) ||
+      (isSkipped(email) && !existingJira?.email) ||
+      (!finalApiToken) ||
+      (isSkipped(projectKey) && !existingJira?.projectKey);
 
     if (skipped) {
       note(
@@ -129,10 +140,10 @@ export async function installCommand(): Promise<void> {
       });
     } else {
       const jiraConfig = {
-        baseUrl: (baseUrl as string).trim(),
-        email: (email as string).trim(),
-        apiToken: (apiToken as string).trim(),
-        projectKey: (projectKey as string).trim(),
+        baseUrl: isSkipped(baseUrl) ? existingJira.baseUrl : (baseUrl as string).trim(),
+        email: isSkipped(email) ? existingJira.email : (email as string).trim(),
+        apiToken: finalApiToken.trim(),
+        projectKey: isSkipped(projectKey) ? existingJira.projectKey : (projectKey as string).trim(),
       };
       installIssueAnalyzer(jiraConfig);
       registerIssueAnalyzerPermissions();
@@ -161,33 +172,39 @@ export async function installCommand(): Promise<void> {
     log.info('배포할 서버 정보를 입력하세요.');
     log.info('건너뛰려면 아무것도 입력하지 않고 엔터를 누르세요.');
 
+    const existingDeploy = (getSkillConfig('server-deploy') as any)?.servers ?? {};
+    if (Object.keys(existingDeploy).length > 0) log.info('기존 설정이 있습니다. 엔터를 누르면 기존 값을 유지합니다.');
+
     const servers: Record<string, ServerConfig> = {};
 
     for (const serverType of ['qa', 'ci']) {
       log.step(`${serverType.toUpperCase()} 서버`);
 
-      const host = await text({ message: '호스트 (IP 또는 도메인)', placeholder: '192.168.1.100' });
-      handleCancel(host);
-      if (isSkipped(host)) { log.warn(`${serverType.toUpperCase()} 서버 건너뜀`); continue; }
+      const cur = existingDeploy[serverType] as ServerConfig | undefined;
 
-      const user = await text({ message: 'SSH 사용자명', placeholder: 'ubuntu', defaultValue: 'ubuntu' });
+      const host = await text({ message: '호스트 (IP 또는 도메인)', placeholder: '192.168.1.100', defaultValue: cur?.host ?? '' });
+      handleCancel(host);
+      if (isSkipped(host) && !cur?.host) { log.warn(`${serverType.toUpperCase()} 서버 건너뜀`); continue; }
+
+      const user = await text({ message: 'SSH 사용자명', placeholder: 'ubuntu', defaultValue: cur?.user ?? 'ubuntu' });
       handleCancel(user);
 
       const pwd = serverType === 'qa'
-        ? await password({ message: '비밀번호 (SSH 키 인증이면 엔터)', mask: '*' })
+        ? await password({ message: cur?.password ? '비밀번호 (엔터 = 기존 값 유지)' : '비밀번호 (SSH 키 인증이면 엔터)', mask: '*' })
         : { value: '' };
       handleCancel(pwd);
 
-      const basePath = await text({ message: '베이스 경로', placeholder: '/app/front', defaultValue: '/app/front' });
+      const basePath = await text({ message: '베이스 경로', placeholder: '/app/front', defaultValue: cur?.basePath ?? '/app/front' });
       handleCancel(basePath);
 
       const serverEntry: ServerConfig = {
-        host: (host as string).trim(),
-        user: (user as string).trim(),
-        basePath: (basePath as string).trim(),
+        host: isSkipped(host) ? cur!.host : (host as string).trim(),
+        user: isSkipped(user) ? (cur?.user ?? 'ubuntu') : (user as string).trim(),
+        basePath: isSkipped(basePath) ? (cur?.basePath ?? '/app/front') : (basePath as string).trim(),
       };
       const pwdStr = typeof pwd === 'string' ? pwd : (pwd as { value?: string }).value ?? '';
       if (pwdStr.trim()) serverEntry.password = pwdStr.trim();
+      else if (cur?.password) serverEntry.password = cur.password;
 
       servers[serverType] = serverEntry;
     }
