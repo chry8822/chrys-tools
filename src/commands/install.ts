@@ -89,19 +89,18 @@ export async function installCommand(): Promise<void> {
     log.info('건너뛰려면 아무것도 입력하지 않고 엔터를 누르세요.');
 
     const existingJira = (getSkillConfig('issue-analyzer') as any)?.jira;
-    if (existingJira) log.info('기존 설정이 있습니다. 엔터를 누르면 기존 값을 유지합니다.');
 
     const baseUrl = await text({
       message: 'Jira Base URL',
       placeholder: 'https://company.atlassian.net',
-      defaultValue: existingJira?.baseUrl ?? '',
+      initialValue: existingJira?.baseUrl ?? '',
     });
     handleCancel(baseUrl);
 
     const email = await text({
       message: 'Atlassian 계정 이메일',
       placeholder: 'you@company.com',
-      defaultValue: existingJira?.email ?? '',
+      initialValue: existingJira?.email ?? '',
     });
     handleCancel(email);
 
@@ -117,7 +116,7 @@ export async function installCommand(): Promise<void> {
     const projectKey = await text({
       message: 'Jira Project Key',
       placeholder: 'ABEH',
-      defaultValue: existingJira?.projectKey ?? '',
+      initialValue: existingJira?.projectKey ?? '',
     });
     handleCancel(projectKey);
 
@@ -182,11 +181,11 @@ export async function installCommand(): Promise<void> {
 
       const cur = existingDeploy[serverType] as ServerConfig | undefined;
 
-      const host = await text({ message: '호스트 (IP 또는 도메인)', placeholder: '192.168.1.100', defaultValue: cur?.host ?? '' });
+      const host = await text({ message: '호스트 (IP 또는 도메인)', placeholder: '192.168.1.100', initialValue: cur?.host ?? '' });
       handleCancel(host);
       if (isSkipped(host) && !cur?.host) { log.warn(`${serverType.toUpperCase()} 서버 건너뜀`); continue; }
 
-      const user = await text({ message: 'SSH 사용자명', placeholder: 'ubuntu', defaultValue: cur?.user ?? 'ubuntu' });
+      const user = await text({ message: 'SSH 사용자명', placeholder: 'ubuntu', initialValue: cur?.user ?? '' });
       handleCancel(user);
 
       const pwd = serverType === 'qa'
@@ -194,7 +193,7 @@ export async function installCommand(): Promise<void> {
         : { value: '' };
       handleCancel(pwd);
 
-      const basePath = await text({ message: '베이스 경로', placeholder: '/app/front', defaultValue: cur?.basePath ?? '/app/front' });
+      const basePath = await text({ message: '베이스 경로', placeholder: '/app/front', initialValue: cur?.basePath ?? '' });
       handleCancel(basePath);
 
       const serverEntry: ServerConfig = {
