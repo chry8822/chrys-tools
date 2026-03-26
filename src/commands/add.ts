@@ -14,6 +14,7 @@ import {
   install as installDeploy,
   SKILL_LABEL as DEPLOY_LABEL,
   getInstallPath as getDeployPath,
+  type ServerConfig,
 } from '../skills/server-deploy/index.js';
 import {
   install as installPresent,
@@ -105,7 +106,7 @@ export async function addCommand(skillArg: string): Promise<void> {
     intro(`${DEPLOY_LABEL} 추가`);
     log.info('배포할 서버 정보를 입력하세요. 여러 서버는 반복 실행으로 추가할 수 있습니다.');
 
-    const servers: Record<string, object> = {};
+    const servers: Record<string, ServerConfig> = {};
 
     for (const serverType of ['qa', 'ci']) {
       log.step(`${serverType.toUpperCase()} 서버 설정`);
@@ -130,11 +131,10 @@ export async function addCommand(skillArg: string): Promise<void> {
       const branch = await text({ message: '배포 브랜치', placeholder: serverType === 'qa' ? 'develop' : 'main', defaultValue: serverType === 'qa' ? 'develop' : 'main' });
       handleCancel(branch);
 
-      const serverEntry: Record<string, string> = {
+      const serverEntry: ServerConfig = {
         host: (host as string).trim(),
         user: (user as string).trim(),
-        projectPath: (projectPath as string).trim(),
-        branch: (branch as string).trim(),
+        basePath: (projectPath as string).trim(),
       };
       const pwdStr = typeof pwd === 'string' ? pwd : (pwd as { value?: string }).value ?? '';
       if (pwdStr.trim()) serverEntry.password = pwdStr.trim();

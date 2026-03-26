@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { installSkillFile, skillDirPath, registerSkillInClaudeMd } from '../../utils/fs.js';
+import { installSkillFile, skillDirPath } from '../../utils/fs.js';
 import { setSkillConfig } from '../../utils/config.js';
 
 export const SKILL_NAME = 'issue-analyzer';
@@ -18,7 +18,6 @@ export interface JiraInputConfig {
 
 export function install(jira: JiraInputConfig): void {
   installSkillFile(SKILL_NAME, 'SKILL.md', SKILL_MD);
-  registerSkillInClaudeMd(SKILL_NAME);
   setSkillConfig(SKILL_NAME, {
     jira: {
       baseUrl: jira.baseUrl,

@@ -80,7 +80,6 @@ npx chrys-tools install
 
 ```
 ~/.claude/
-  CLAUDE.md                              ← skill 참조 등록
   settings.json                          ← MCP 서버 + 실행 권한 자동 등록
   config.json                            ← Jira / 서버 연결 정보
   skills/
@@ -500,14 +499,13 @@ npx chrys-tools list
 
 ## 동작 원리
 
-Claude Code는 시작 시 `~/.claude/CLAUDE.md`와 `~/.claude/skills/`를 자동으로 읽습니다.
-이 패키지는 해당 경로에 SKILL.md를 설치하고 `CLAUDE.md`에 참조를 등록합니다.
+Claude Code는 시작 시 `~/.claude/skills/`를 자동으로 스캔하고, 필요할 때만 해당 skill을 로드합니다.
+이 패키지는 해당 경로에 SKILL.md를 설치하기만 하면 됩니다.
 프로젝트 레포에 아무것도 추가하지 않아도 어느 프로젝트에서나 동작합니다.
 
 ```
 npx chrys-tools install
         ↓
-~/.claude/CLAUDE.md          @skill 참조 등록
 ~/.claude/settings.json      MCP 서버 + 권한 자동 구성
 ~/.claude/config.json        Jira · 서버 연결 정보
 ~/.claude/skills/            각 skill의 SKILL.md

@@ -14,6 +14,7 @@ import {
   install as installDeploy,
   SKILL_LABEL as DEPLOY_LABEL,
   getInstallPath as getDeployPath,
+  type ServerConfig,
 } from '../skills/server-deploy/index.js';
 import {
   install as installPresent,
@@ -34,7 +35,7 @@ export async function installCommand(): Promise<void> {
   intro('chrys-tools installer — Claude Code용 Skills 설치 도구');
 
   // 2. 설치할 skill 다중 선택
-  const selected = await multiselect<string, string>({
+  const selected = await multiselect({
     message: '설치할 기능을 선택하세요 (스페이스로 선택/해제, 엔터로 확인)',
     options: [
       {
@@ -160,7 +161,7 @@ export async function installCommand(): Promise<void> {
     log.info('배포할 서버 정보를 입력하세요.');
     log.info('건너뛰려면 아무것도 입력하지 않고 엔터를 누르세요.');
 
-    const servers: Record<string, object> = {};
+    const servers: Record<string, ServerConfig> = {};
 
     for (const serverType of ['qa', 'ci']) {
       log.step(`${serverType.toUpperCase()} 서버`);
@@ -180,7 +181,7 @@ export async function installCommand(): Promise<void> {
       const basePath = await text({ message: '베이스 경로', placeholder: '/app/front', defaultValue: '/app/front' });
       handleCancel(basePath);
 
-      const serverEntry: Record<string, string> = {
+      const serverEntry: ServerConfig = {
         host: (host as string).trim(),
         user: (user as string).trim(),
         basePath: (basePath as string).trim(),

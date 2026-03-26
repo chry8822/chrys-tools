@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { installSkillFile, skillDirPath, registerSkillInClaudeMd } from '../../utils/fs.js';
+import { installSkillFile, skillDirPath } from '../../utils/fs.js';
 import { setSkillConfig } from '../../utils/config.js';
 
 export const SKILL_NAME = 'server-deploy';
@@ -23,7 +23,6 @@ export interface DeployConfig {
 
 export function install(deployConfig: DeployConfig): void {
   installSkillFile(SKILL_NAME, 'SKILL.md', SKILL_MD);
-  registerSkillInClaudeMd(SKILL_NAME);
   setSkillConfig(SKILL_NAME, deployConfig as unknown as import('../../utils/config.js').SkillConfig);
 }
 

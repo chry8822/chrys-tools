@@ -3,7 +3,7 @@ import { handleCancel, isSkipped } from '../utils/prompt.js';
 import { setSkillConfig, getSkillConfig } from '../utils/config.js';
 import { registerAtlassianMcp } from '../utils/settings.js';
 import { SKILL_NAME as ISSUE_SKILL } from '../skills/issue-analyzer/index.js';
-import { SKILL_NAME as DEPLOY_SKILL } from '../skills/server-deploy/index.js';
+import { SKILL_NAME as DEPLOY_SKILL, type ServerConfig } from '../skills/server-deploy/index.js';
 
 export async function configCommand(skillArg: string): Promise<void> {
   const skill = skillArg.toLowerCase();
@@ -111,7 +111,7 @@ export async function configCommand(skillArg: string): Promise<void> {
       const basePath = await text({ message: '베이스 경로', placeholder: cur?.basePath ?? '/app/front', defaultValue: cur?.basePath ?? '/app/front' });
       handleCancel(basePath);
 
-      const updated: Record<string, string> = {
+      const updated: ServerConfig = {
         host: isSkipped(host) ? (cur?.host ?? '') : (host as string).trim(),
         user: isSkipped(user) ? (cur?.user ?? '') : (user as string).trim(),
         basePath: isSkipped(basePath) ? (cur?.basePath ?? '') : (basePath as string).trim(),
