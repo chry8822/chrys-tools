@@ -44,13 +44,19 @@ Jira 이슈 분석·수정, 서버 배포, README 자동 생성, 발표용 HTML 
 
 ---
 
-## 설치
+## 설치 · 업데이트 · 설정 변경
+
+### 처음 설치할 때 (딱 한 번)
 
 ```bash
-npx chrys-tools install
+# 1. CLI 설치
+npm install -g chrys-tools
+
+# 2. Jira / 서버 정보 입력 + skill 파일 설치
+chrys-tools install
 ```
 
-설치 중 필요한 정보를 입력하면 나머지는 자동으로 처리됩니다.
+`chrys-tools install`을 실행하면 아래처럼 대화형으로 진행됩니다:
 
 ```
 ◆  설치할 기능을 선택하세요
@@ -76,17 +82,23 @@ npx chrys-tools install
 ◆  CI 베이스 경로 /app/front
 ```
 
-설치 후 `~/.claude/`에 아래 파일들이 자동으로 구성됩니다:
+---
 
+### 업데이트할 때
+
+```bash
+chrys-tools update
 ```
-~/.claude/
-  settings.json                          ← MCP 서버 + 실행 권한 자동 등록
-  config.json                            ← Jira / 서버 연결 정보
-  skills/
-    issue-analyzer/SKILL.md
-    server-deploy/SKILL.md
-    readme-generator/SKILL.md
-    present-generator/SKILL.md
+
+CLI와 skill 파일을 최신 버전으로 교체합니다. **Jira · 서버 설정은 그대로 유지됩니다.**
+
+---
+
+### 설정 변경할 때
+
+```bash
+chrys-tools config jira      # Jira URL / 이메일 / API Token / Project Key 변경
+chrys-tools config deploy    # QA/CI 서버 호스트 / 경로 / 비밀번호 변경
 ```
 
 ---
