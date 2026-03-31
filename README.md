@@ -1,5 +1,9 @@
 # chrys-tools
 
+[![npm version](https://img.shields.io/npm/v/chrys-tools)](https://www.npmjs.com/package/chrys-tools)
+[![npm downloads](https://img.shields.io/npm/dm/chrys-tools)](https://www.npmjs.com/package/chrys-tools)
+										
+
 > Claude Code를 팀 개발 도구로 확장하는 Skills CLI
 
 `npx chrys-tools install` 한 번으로 설치하면 **어느 프로젝트에서 Claude Code를 열어도**
